@@ -2,32 +2,63 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Square extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        value: null
-      };
-    }
+// Controlled Component (no state, only receives prop value)
+  // class Square extends React.Component {
+  //   render() {
+  //     return (
+  //       <button 
+  //         className="square" 
+  //         onClick={this.props.onClick}
+  //       >
+  //         {this.props.value}
+  //       </button>
+  //     );
+  //   }
+  // }
 
-    render() {
-      return (
-        <button className="square" 
-        onClick={ ()=>{this.setState({value: 'X'})} }
-        >
-          {this.state.value}
-        </button>
-      );
-    }
+  // this is a Function Component now.
+  function Square(props){
+    return(
+      <button className = "square" onClick={props.onClick}>
+        {props.value}
+      </button>
+    )
   }
   
   class Board extends React.Component {
+    constructor(props){
+      super(props);
+      this.state = {
+        squares: Array(9).fill(null),
+        xIsNext: true
+      }
+    }
+
+    handleClick(i) {
+      // immutable way(good and pure react componenet)
+      const squares = this.state.squares.slice();
+      squares[i] = this.state.xIsNext ? 'X' : 'O';
+      this.setState({
+        squares: squares,
+        xIsNext: !this.state.xIsNext
+      });
+
+      // mutable way for changing way(not good, not pure react component)
+      // this.state.squares[i]='X';
+      // this.forceUpdate();
+    }
+
     renderSquare(i) {
-      return <Square value={i}/>;
+      return ( 
+        <Square 
+          value={this.state.squares[i]}
+          onClick={()=>this.handleClick(i)}  
+        />
+      );
     }
   
     render() {
-      const status = 'Next player: X';
+      const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
   
       return (
         <div>
